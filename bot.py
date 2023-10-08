@@ -1,6 +1,6 @@
 from discord.ext import commands
 import discord
-from cult_api_integration import get_class_details_v2, get_booked_classes, CULT_CENTRES
+from cult_fit.cult_api_integration import get_class_details_v2, get_booked_classes, CULT_CENTRES
 
 import os
 
