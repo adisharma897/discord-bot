@@ -1,16 +1,16 @@
-import os
 import logging
 import yfinance as yf
 import numpy as np
 import pandas as pd
 from sqlalchemy import create_engine, text
-
 from discord import SyncWebhook
 import os
 
-webhook_url = os.environ.get('INTELLIGENT_INVESTMENT_DISCORD_WEBHOOK_URL')
-postgres_url = os.environ.get('POSTGRES_URL')
-market_cap_threshold = int(os.environ.get('INTELLIGENT_INVESTMENT_MARKET_CAP_THRESHOLD'))
+from utils.secret_manager import get_secret
+
+webhook_url = get_secret('INTELLIGENT_INVESTMENT_DISCORD_WEBHOOK_URL')
+postgres_url = get_secret('POSTGRES_URL')
+market_cap_threshold = int(get_secret('INTELLIGENT_INVESTMENT_MARKET_CAP_THRESHOLD'))
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
