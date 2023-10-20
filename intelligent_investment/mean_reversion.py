@@ -4,7 +4,13 @@ import numpy as np
 import pandas as pd
 from sqlalchemy import create_engine, text
 from discord import SyncWebhook
+
+# core python imports
 import os
+import sys
+
+# add parent package to sys.path
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from utils.secret_manager import get_secret
 
