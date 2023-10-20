@@ -1,6 +1,6 @@
 import boto3
 from botocore.exceptions import ClientError
-
+from json import loads
 
 def get_secret(key):
 
@@ -24,5 +24,5 @@ def get_secret(key):
         raise e
 
     # Decrypts secret using the associated KMS key.
-    secrets = get_secret_value_response['SecretString']
+    secrets = loads(get_secret_value_response['SecretString'])
     return secrets.get(key, '')
