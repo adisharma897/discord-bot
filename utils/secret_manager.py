@@ -5,11 +5,13 @@ from botocore.exceptions import ClientError
 def get_secret(key):
 
     secret_name = "prod/discord/personal_bot"
+    region_name = "ap-south-1"
 
     # Create a Secrets Manager client
     session = boto3.session.Session()
     client = session.client(
-        service_name='secretsmanager'
+        service_name='secretsmanager',
+        region_name=region_name
     )
 
     try:
