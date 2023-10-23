@@ -5,6 +5,7 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 from discord import SyncWebhook
 import requests
+from lxml import html
 
 # core python imports
 import os
@@ -167,6 +168,8 @@ def driver():
 def close_call(symbol, quantity, price=None):
     if price is None:
         price = get_price(symbol)
+    if price is None:
+        return
 
     save_to_db(symbol, 'sell', price, quantity)
     m = f'''Congrats. Closed Call with {quantity} Quantity of {symbol} @ {price}'''
@@ -176,6 +179,8 @@ def buy_stock(symbol, quantity, price=None):
 
     if price is None:
         price = get_price(symbol)
+    if price is None:
+        return
 
     save_to_db(symbol, 'buy', price, quantity)
     m = f'''Bought {quantity} Quantity of {symbol} @ {price}'''
@@ -191,10 +196,22 @@ def save_to_db(symbol, action, price, quantity):
     conn.commit()
 
 def get_price(symbol):
-    sess = requests.Session()
-    sess.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36'})
-    stock = yf.Ticker(f'{symbol}.NS', session=sess)
-    return stock.info.get('currentPrice')
+    headers = {
+        'User-Agent'      : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36', 
+        'Accept'          : 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 
+        'Accept-Language' : 'en-US,en;q=0.5',
+        'DNT'             : '1', # Do Not Track Request Header 
+        'Connection'      : 'close'
+        }
+    xpath = '//div[@class="stock-page__price"]//div[@class="stock-page__value stock__price"]//text()'
+    url = f'https://www.5paisa.com/stocks/{symbol}-share-price'
+    r = requests.get(url, headers=headers)
+    if r.status_code != 200:
+        return None
+    tree = html.fromstring(r.text)
+    price = ''.join(tree.xpath(xpath))
+    price = float(price.replace(u"\u20B9", ''))
+    return price
 
 def send_message(m):
     webhook = SyncWebhook.from_url(webhook_url)
