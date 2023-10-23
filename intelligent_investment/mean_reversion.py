@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from sqlalchemy import create_engine, text
 from discord import SyncWebhook
+import requests
 
 # core python imports
 import os
@@ -190,7 +191,9 @@ def save_to_db(symbol, action, price, quantity):
     conn.commit()
 
 def get_price(symbol):
-    stock = yf.Ticker(f'{symbol}.NS')
+    sess = requests.Session()
+    sess.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36'})
+    stock = yf.Ticker(f'{symbol}.NS', session=sess)
     return stock.info.get('currentPrice')
 
 def send_message(m):
